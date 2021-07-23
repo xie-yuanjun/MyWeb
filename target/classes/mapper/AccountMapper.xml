@@ -1,0 +1,22 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.mapper.AccountMapper">
+    <!--  映射关系  -->
+    <resultMap id="Account" type="account">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+    </resultMap>
+
+    <!--  查询  -->
+    <select id="select" resultType="account">
+        select id, username, password from account
+        <where>
+            <if test="id != 0">
+                id = #{id}
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <appender name="console_debug" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+        <!--  只打印debug信息  -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--  打印debug信息  -->
+    <logger name="com.demo" level="debug"></logger>
+
+
+
+</configuration>

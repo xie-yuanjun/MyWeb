@@ -1,0 +1,36 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.mapper.AccountLikesMapper">
+
+    <!--  检查数据库记录是否存在记录  -->
+    <select id="select" resultType="accountLikes">
+        select id, account_id, likes_id, state from t_account_likes
+        <where>
+            <if test="accountId != 0">
+                account_id = #{accountId}
+            </if>
+            <if test="likesId != 0">
+                and likes_id = #{likesId}
+            </if>
+        </where>
+    </select>
+
+    <!--  插入一条记录  -->
+    <insert id="insert" useGeneratedKeys="true">
+        insert into t_account_likes (account_id, likes_id) VALUES (#{accountId}, #{likesId});
+    </insert>
+
+    <!--  修改state  -->
+    <update id="update">
+        update t_account_likes set state = #{state} where id = #{id};
+    </update>
+
+    <!--  统计数量  -->
+    <select id="count" resultType="int">
+        select count (*) from t_account_likes
+        <where>
+            <if test="likesId != 0">
+                likes_id = #{likesId}
+            </if>
+        </where>
+    </select>
+</mapper>
