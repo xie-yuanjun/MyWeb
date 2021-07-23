@@ -111,7 +111,7 @@ public class WordController {
     }
 
     /**
-     * 文档查询接口
+     * 按标题模糊查询
      *
      * @param condition
      * @return
@@ -122,7 +122,7 @@ public class WordController {
             condition = null;
         }
         ResponseTemplate response = new ResponseTemplate();
-        List<WordInfo> wordList = wordService.findWordListInfo(condition);
+        List<WordInfo> wordList = wordService.findWordByTitle(condition);
         response.setResponseTemplate(wordList);
         return response;
     }
