@@ -32,15 +32,66 @@ public class ResponseTemplate<T> {
         this.data = null;
     }
 
+    /**
+     * 设置提示信息，数据默认为空，状态默认成功
+     *
+     * @param tip
+     * @return
+     */
+    public ResponseTemplate setResponseTemplate(String tip) {
+       return this.setResponseTemplate(null, StatusEnum.SUCCESS, tip);
+    }
+
+    /**
+     * 设置返回数据、提示信息，状态默认成功
+     * @param data
+     * @param tip
+     * @return
+     */
+    public ResponseTemplate setResponseTemplate(T data, String tip) {
+        return setResponseTemplate(data, StatusEnum.SUCCESS, tip);
+    }
+
+    /**
+     * 设置状态、提示信息，数据默认为空
+     * @param state
+     * @param tip
+     * @return
+     */
+    public ResponseTemplate setResponseTemplate(StatusEnum state, String tip) {
+        return setResponseTemplate(null, state, tip);
+    }
+
+    /**
+     * 设置返回数据、状态
+     *
+     * @param data
+     * @param state
+     * @return
+     */
     public ResponseTemplate setResponseTemplate(T data, StatusEnum state) {
-        return setResponseTemplate(data, state, "");
+        return setResponseTemplate(data, state, null);
     }
 
-    public ResponseTemplate setResponseTemplate(T data){
-        return setResponseTemplate(data, StatusEnum.SUCCESS);
+    /**
+     * 设置返回数据，状态默认成功
+     *
+     * @param data
+     * @return
+     */
+    public ResponseTemplate setResponseTemplate(T data) {
+        return setResponseTemplate(data, StatusEnum.SUCCESS, null);
     }
 
-    public ResponseTemplate setResponseTemplate(T data, StatusEnum state, String tip){
+    /**
+     * 设置返回数据、状态、提示信息
+     *
+     * @param data
+     * @param state
+     * @param tip
+     * @return
+     */
+    public ResponseTemplate setResponseTemplate(T data, StatusEnum state, String tip) {
         this.state = state;
         this.code = state.getCode();
         this.tip = tip;

@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class WordInfo {
+    private int id;
     //标题
     private String title;
     //内容

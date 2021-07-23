@@ -1,6 +1,7 @@
 package com.demo.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
  */
 @Data
 @Component
+@NoArgsConstructor
 public class Word {
     private int id;
     private int accountId;
@@ -21,4 +23,14 @@ public class Word {
     private String title;
     private String content;
     private Date createTime;
+
+    public Word(int accountId, int classId) {
+        this.accountId = accountId;
+        this.classId = classId;
+    }
+
+    public Word(String title) {
+        this.title = title;
+    }
+
 }

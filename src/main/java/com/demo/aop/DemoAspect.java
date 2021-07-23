@@ -22,31 +22,62 @@ import org.springframework.stereotype.Component;
 public class DemoAspect {
     private Logger logger;
 
-    //service
+    /**
+     * com.demo.service包下的所有方法
+     */
     @Pointcut("execution(public * com.demo.service.*.*(..))")
     public void service() {
     }
 
-    //user
+    /**
+     * com.demo.controller.user包下的所有方法
+     */
     @Pointcut("execution(public * com.demo.controller.user.*.*(..))")
-    public void userController(){}
+    public void userController() {
+    }
 
-    //word
+    /**
+     * com.demo.controller.word包下的所有方法
+     */
     @Pointcut("execution(public * com.demo.controller.word.*.*(..))")
-    public void wordController(){}
+    public void wordController() {
+    }
 
-    //controller
+    /**
+     * com.demo.controller.user 和 com.demo.controller.word包下的所有方法
+     */
     @Pointcut("userController() || wordController()")
-    public void controller(){}
+    public void controller() {
+    }
 
+    /**
+     * com.demo.controller.user
+     * com.demo.controller.word
+     * com.demo.service
+     * 三个包下面的所有方法
+     */
     @Pointcut("controller() || service()")
-    public void controllerAndService(){}
+    public void controllerAndService() {
+    }
 
+    /**
+     * controller 和 service
+     * 前置日志通知
+     *
+     * @param joinPoint
+     */
     @Before("controllerAndService()")
     public void beforeLog(JoinPoint joinPoint) {
         this.printBeforeLog(joinPoint);
     }
 
+    /**
+     * controller 和 service
+     * 后置日志通知
+     *
+     * @param joinPoint
+     * @param returnValue
+     */
     @AfterReturning(pointcut = "controllerAndService()" +
             "", returning = "returnValue")
     public void afterLog(JoinPoint joinPoint, Object returnValue) {
@@ -55,6 +86,7 @@ public class DemoAspect {
 
     /**
      * 打印前置日志
+     *
      * @param joinPoint
      */
     private void printBeforeLog(JoinPoint joinPoint) {
@@ -69,6 +101,7 @@ public class DemoAspect {
 
     /**
      * 打印后置日志
+     *
      * @param joinPoint
      * @param returnValue
      */
@@ -83,6 +116,7 @@ public class DemoAspect {
 
     /**
      * 方法签名处理
+     *
      * @param signature
      * @return
      */
@@ -91,11 +125,13 @@ public class DemoAspect {
         int index1 = info.indexOf(' ') + 1;
         int index2 = info.lastIndexOf('.') + 1;
         StringBuilder str = new StringBuilder();
-        str.append(info.substring(0,index1)).append(info.substring(index2));
+        str.append(info.substring(0, index1)).append(info.substring(index2));
         return str.toString();
     }
+
     /**
      * 解析方法参数字符串
+     *
      * @param joinPoint
      * @return
      */

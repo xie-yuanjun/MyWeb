@@ -5,6 +5,7 @@ import com.demo.exception.ServiceException;
 import com.demo.utils.ResponseTemplate;
 import com.demo.utils.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,17 +23,19 @@ public class ControllerExceptionHandler {
 
     /**
      * 参数传递不合法异常
+     *
      * @param ex
      * @return
      */
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseTemplate IllegalStateExceptionHandler(IllegalStateException ex){
+    public ResponseTemplate IllegalStateExceptionHandler(IllegalStateException ex) {
         responseTemplate.setResponseTemplate(null, StatusEnum.ERROR, "不合法的参数");
         return responseTemplate;
     }
 
     /**
      * 所有异常处理
+     *
      * @param e
      * @return
      */
@@ -44,6 +47,7 @@ public class ControllerExceptionHandler {
 
     /**
      * 业务中出现的异常的处理
+     *
      * @param e
      * @return
      */
@@ -51,6 +55,15 @@ public class ControllerExceptionHandler {
     public ResponseTemplate ServiceExceptionHandler(ServiceException e) {
         responseTemplate.setResponseTemplate(null, StatusEnum.ERROR, e.getMessage());
         return responseTemplate;
+    }
+
+    /**
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+    public ResponseTemplate UnsatisfiedServletRequestParameterExceptionHandler(Exception e) {
+        return responseTemplate.setResponseTemplate(null, StatusEnum.ERROR, "参数条件不满足！");
     }
 
 }

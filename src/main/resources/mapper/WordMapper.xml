@@ -20,6 +20,9 @@
             <if test="accountId != 0">
                 and account_id = #{accountId}
             </if>
+            <if test="title != null">
+                and title like #{title}
+            </if>
         </where>
     </sql>
 

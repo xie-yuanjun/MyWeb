@@ -93,9 +93,7 @@ public class WordServiceImpl implements WordService {
         wordInfoList = new ArrayList<>();
 
         //根据条件模糊查找word信息
-        Word word_title = new Word();
-        word_title.setTitle("%" + condition + "%");
-        List<Word> wordList = wordMapper.select(word_title);
+        List<Word> wordList = wordMapper.select(new Word("%" + condition + "%"));
 
         //如果没有，直接返回
         if (wordList == null || wordList.size() == 0) {
@@ -203,8 +201,28 @@ public class WordServiceImpl implements WordService {
         }
 
         //根据类别名查找类别id
+        WordClass wordClass = wordClassService.select(category);
+        int classId = 0;
+        if (wordClass != null) {
+            classId = wordClass.getId();
+        }
 
-        return null;
+        if (accountId == 0 || classId == 0) {
+            return null;
+        }
+
+        //根据用户id和类别id查找文档
+        List<Word> wordList = wordMapper.select(new Word(accountId, classId));
+        if (wordList == null || wordList.size() == 0) {
+            return null;
+        }
+
+        wordInfoList = new ArrayList<>();
+        for (Word word: wordList) {
+            WordInfo wordInfo = this.transWord(word, username, category);
+            wordInfoList.add(wordInfo);
+        }
+        return wordInfoList;
     }
 
 
@@ -215,23 +233,7 @@ public class WordServiceImpl implements WordService {
      * @return
      */
     private WordInfo transWord(Word word) {
-        //根据用户ID查询作者
-        int accountId = word.getAccountId();
-        Account account = accountService.selectById(accountId);
-        String author = null;
-        if (account != null) {
-            author = account.getUsername();
-        }
-
-        //根据类别ID查询类别
-        int classId = word.getClassId();
-        WordClass wordClass = wordClassService.select(classId);
-        String category = null;
-        if (wordClass != null) {
-            category = wordClass.getName();
-        }
-
-        return transWord(word, author, category);
+        return transWord(word, null, null);
     }
 
     /**
@@ -243,6 +245,7 @@ public class WordServiceImpl implements WordService {
      * @return
      */
     private WordInfo transWord(Word word, String author, String category) {
+        int wordId = word.getId();
         String title = word.getTitle();
         String content = word.getContent();
         String date = word.getCreateTime().toString();
@@ -265,7 +268,7 @@ public class WordServiceImpl implements WordService {
             }
         }
 
-        return new WordInfo(title, content, category, author, date);
+        return new WordInfo(wordId,title, content, category, author, date);
     }
 
 }

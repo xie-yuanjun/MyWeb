@@ -14,7 +14,7 @@
             <if test="id != 0">
                 id = #{id}
             </if>
-            <if test="username != null and username != ''">
+            <if test="username != null">
                 username = #{username}
             </if>
         </where>

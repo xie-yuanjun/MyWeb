@@ -19,10 +19,10 @@
     <select id="selectAll" parameterType="wordClass" resultType="wordClass">
         select id, account_id, name from word_class
         <where>
-            <if test="id != null and id != 0">
+            <if test="id != 0">
                 id = #{id}
             </if>
-            <if test="account_id != null and account_id != 0">
+            <if test="account_id != 0">
                 account_id = #{accountId}
             </if>
             <if test="name != null">
@@ -43,6 +43,13 @@
     <!--  根据类别名查找单个类别信息（name）  -->
     <select id="selectOne" resultType="wordClass">
         select id, name from word_class
-        where name = #{name};
+        <where>
+            <if test="id != 0">
+                id = #{id}
+            </if>
+            <if test="name != null ">
+                and name = #{name}
+            </if>
+        </where>
     </select>
 </mapper>

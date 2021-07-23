@@ -11,11 +11,17 @@
         create_time
         from word
         <where>
-            <if test="id != null and id != 0">
+            <if test="id != 0">
                 id = #{id}
             </if>
-            <if test="classId != null and classId != 0">
-                class_id = #{classId}
+            <if test="classId != 0">
+                and class_id = #{classId}
+            </if>
+            <if test="accountId != 0">
+                and account_id = #{accountId}
+            </if>
+            <if test="title != null">
+                and title like #{title}
             </if>
         </where>
     </sql>
@@ -34,7 +40,7 @@
     <!--  动态修改文档  -->
     <update id="update" parameterType="word">
         update word set
-        <if test="title != null">
+        <if test="title != null and title != ''">
             title = #{title},
         </if>
         <if test="content != null">
@@ -48,4 +54,6 @@
     <select id="select" parameterType="word" resultType="word">
         <include refid="select"></include>
     </select>
+
+
 </mapper>

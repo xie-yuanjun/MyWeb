@@ -7,6 +7,8 @@ import com.demo.po.WordInfo;
 import com.demo.service.CommentService;
 import com.demo.service.WordService;
 import com.demo.utils.ResponseTemplate;
+import com.demo.utils.StatusEnum;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -35,11 +37,14 @@ public class WordController {
      * @param word
      * @return
      */
-    @RequestMapping(value = "/word", method = RequestMethod.POST)
+    @PostMapping("/word")
     public ResponseTemplate addWord(Word word) {
         ResponseTemplate response = new ResponseTemplate();
         int i = wordService.insert(word);
-        return response;
+        if (i == 0) {
+            return response.setResponseTemplate(StatusEnum.FAILED, "添加文档失败！");
+        }
+        return response.setResponseTemplate("添加文档成功！");
     }
 
     /**
@@ -48,13 +53,16 @@ public class WordController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/word", method = RequestMethod.DELETE)
+    @Delete("/word")
     public ResponseTemplate deleteWord(int id) {
         ResponseTemplate response = new ResponseTemplate();
         Word word = new Word();
         word.setId(id);
         int i = wordService.delete(word);
-        return response;
+        if (i == 0) {
+            return response.setResponseTemplate(StatusEnum.FAILED, "删除失败！");
+        }
+        return response.setResponseTemplate("删除成功！");
     }
 
     /**
@@ -63,11 +71,14 @@ public class WordController {
      * @param word
      * @return
      */
-    @RequestMapping(value = "/word", method = RequestMethod.PUT)
+    @PutMapping("/word")
     public ResponseTemplate updateTitle(Word word) {
         ResponseTemplate response = new ResponseTemplate();
         int i = wordService.update(word);
-        return response;
+        if (i == 0) {
+            response.setResponseTemplate(StatusEnum.FAILED, "修改失败！");
+        }
+        return response.setResponseTemplate("修改成功！");
     }
 
     /**
@@ -106,7 +117,7 @@ public class WordController {
     public ResponseTemplate getAnswer(int commentId) {
         ResponseTemplate response = new ResponseTemplate();
         Comment reply = commentService.getAnswer(commentId);
-       response.setResponseTemplate(reply);
+        response.setResponseTemplate(reply);
         return response;
     }
 
@@ -117,7 +128,7 @@ public class WordController {
      * @return
      */
     @GetMapping(value = "/word", params = "condition")
-    public ResponseTemplate getWordInfoListByCondition(String condition) {
+    public ResponseTemplate getWordByCondition(String condition) {
         if (condition.equals("")) {
             condition = null;
         }
@@ -129,16 +140,31 @@ public class WordController {
 
     /**
      * 查询某一类别下的文档信息
+     *
      * @param category
      * @return
      */
     @GetMapping(value = "/word", params = "category")
-    public ResponseTemplate getWordInfoListByCategory(String category) {
+    public ResponseTemplate getWordByCategory(String category) {
         ResponseTemplate response = new ResponseTemplate();
         if (StringUtils.isEmpty(category)) {
             throw new IllegalParameterException("不合法的参数！");
         }
-        wordService.findWordByCategory(category);
-        return response;
+        List<WordInfo> wordInfoList = wordService.findWordByCategory(category);
+        return response.setResponseTemplate(wordInfoList);
+    }
+
+    /**
+     * 查询用户某个类别下的文档
+     *
+     * @param username
+     * @param category
+     * @return
+     */
+    @GetMapping(value = "/word", params = "username, category")
+    public ResponseTemplate getWordByUsernameAndCategory(String username, String category) {
+        ResponseTemplate response = new ResponseTemplate();
+        List<WordInfo> wordInfoList = wordService.findWordByUsernameAndCategory(username, category);
+        return response.setResponseTemplate(wordInfoList);
     }
 }
