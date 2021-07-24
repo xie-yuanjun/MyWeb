@@ -5,7 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author admin
@@ -24,6 +27,15 @@ public class ApplicationConfig {
 //        //注册服务 服务名：word , IP：172.0.0.1 , 端口：8080
 //        namingService.registerInstance("word", "172.0.0.1", 8080);
 //    }
+
+    /**
+     * 设置时区
+     */
+    @PostConstruct
+    private void setTimezone() {
+        TimeZone timeZone = TimeZone.getTimeZone("GMT-8");
+        TimeZone.setDefault(timeZone);
+    }
 
     @Bean
     @Nonnull

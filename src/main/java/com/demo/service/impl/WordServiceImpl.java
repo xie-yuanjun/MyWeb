@@ -4,12 +4,15 @@ package com.demo.service.impl;
 import com.demo.entity.Account;
 import com.demo.entity.Word;
 import com.demo.entity.WordClass;
+import com.demo.exception.InsertException;
+import com.demo.exception.NotFindException;
 import com.demo.mapper.AccountMapper;
 import com.demo.mapper.WordMapper;
 import com.demo.po.WordInfo;
 import com.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +33,7 @@ public class WordServiceImpl implements WordService {
     @Autowired
     private LikesService likesService;
     @Autowired
-    private CommentService commentService;
-    @Autowired
     private WordClassService wordClassService;
-    @Autowired
-    private AccountMapper accountMapper;
     private WordInfo wordInfo;
     private List<WordInfo> wordInfoList;
 
@@ -59,20 +58,52 @@ public class WordServiceImpl implements WordService {
      * @param word
      * @return
      */
+    @Override
+    @Transactional
     public int insert(Word word) {
-        return wordMapper.insert(word);
+        //查询是否存在用户id
+        boolean condition1 = accountService.ifExists(word.getAccountId());
+        if (!condition1) {
+            throw new NotFindException("此用户不存在");
+        }
+
+        //查询用户是否拥有此文档类型
+        boolean condition2 = wordClassService.ifExists(new WordClass(word.getClassId(), word.getAccountId()));
+        if (!condition2) {
+            throw new NotFindException("此用户尚未创建此文档类型");
+        }
+
+        //添加文档
+        int var1 = wordMapper.insert(word);
+        int var2 = likesService.addLike(word.getId(), "WORD");
+        if (var1 == 0 || var2 == 0) {
+            throw new InsertException("新增文档失败");
+        }
+        return var1;
     }
 
     /**
+     * 删除文档
+     *
      * @param word
      * @return
      */
     @Override
+    @Transactional
     public int delete(Word word) {
+        word = wordMapper.selectOne(word);
+        if (word == null) {
+            throw new NotFindException("试图删除不存在的文档");
+        }
+        if (likesService.ifExists(word.getId(), "WORD")) {
+            likesService.delete(word.getId(), "WORD");
+        }
         return wordMapper.delete(word);
     }
 
     /**
+     * 更新文档
+     *
      * @param word
      * @return
      */
@@ -218,7 +249,7 @@ public class WordServiceImpl implements WordService {
         }
 
         wordInfoList = new ArrayList<>();
-        for (Word word: wordList) {
+        for (Word word : wordList) {
             WordInfo wordInfo = this.transWord(word, username, category);
             wordInfoList.add(wordInfo);
         }
@@ -268,7 +299,7 @@ public class WordServiceImpl implements WordService {
             }
         }
 
-        return new WordInfo(wordId,title, content, category, author, date);
+        return new WordInfo(wordId, title, content, category, author, date);
     }
 
 }

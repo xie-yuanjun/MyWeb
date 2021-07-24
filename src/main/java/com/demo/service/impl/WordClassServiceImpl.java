@@ -124,4 +124,54 @@ public class WordClassServiceImpl implements WordClassService {
         }
         return wordClassInfoList;
     }
+
+    /**
+     * 查看是否存在文档类型--根据id
+     *
+     * @param classId
+     * @return
+     */
+    @Override
+    public boolean ifExists(int classId) {
+        return this.ifExists(new WordClass(classId));
+    }
+
+    /**
+     * 查看是否存在文档类型--根据accountId, category
+     *
+     * @param accountId
+     * @param category
+     * @return
+     */
+    @Override
+    public boolean ifExists(int accountId, String category) {
+        return this.ifExists(new WordClass(accountId, category));
+    }
+
+    /**
+     * 查看用户是否拥有此文档类型--根据classId, accountId
+     *
+     * @param classId
+     * @param accountId
+     * @return
+     */
+    @Override
+    public boolean ifExists(int classId, int accountId) {
+        return this.ifExists(new WordClass(classId, accountId));
+    }
+
+    /**
+     * 查看是否存在文档类型
+     *
+     * @param wordClass
+     * @return
+     */
+    @Override
+    public boolean ifExists(WordClass wordClass) {
+        WordClass wordClass1 = wordClassMapper.selectOne(wordClass);
+        if (wordClass1 != null) {
+            return true;
+        }
+        return false;
+    }
 }

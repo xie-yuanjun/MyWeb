@@ -1,6 +1,7 @@
 package com.demo.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,8 +13,13 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@NoArgsConstructor
 public class Account {
     private int id;
     private String username;
     private String password;
+
+    public Account(int id) {
+        this.id = id;
+    }
 }

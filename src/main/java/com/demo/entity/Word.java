@@ -24,9 +24,20 @@ public class Word {
     private String content;
     private Date createTime;
 
+    public Word(int id) {
+        this.id = id;
+    }
+
     public Word(int accountId, int classId) {
         this.accountId = accountId;
         this.classId = classId;
+    }
+
+    public Word(int accountId, int classId, String title, String content) {
+        this.accountId = accountId;
+        this.classId = classId;
+        this.title = title;
+        this.content = content;
     }
 
     public Word(String title) {

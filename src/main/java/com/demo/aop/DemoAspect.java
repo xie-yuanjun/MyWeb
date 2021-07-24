@@ -110,7 +110,9 @@ public class DemoAspect {
         String methodInfo = this.parseSignature(signature);
         this.logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass());
         logger.debug(methodInfo);
-        logger.debug(returnValue.toString());
+        if (returnValue != null) {
+            logger.debug(returnValue.toString());
+        }
         return returnValue;
     }
 

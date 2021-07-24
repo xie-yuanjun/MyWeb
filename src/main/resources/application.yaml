@@ -4,7 +4,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://linux:3306/test?useSSL=true&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://linux:3306/test?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Beijing
   application:
     name: demo
 

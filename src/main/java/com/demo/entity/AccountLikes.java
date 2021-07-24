@@ -1,6 +1,7 @@
 package com.demo.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,9 +13,19 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@NoArgsConstructor
 public class AccountLikes {
     private int id;
     private int accountId;
     private int likesId;
     private String state;
+
+    public AccountLikes(int likesId) {
+        this.likesId = likesId;
+    }
+
+    public AccountLikes(int accountId, int likesId) {
+        this.accountId = accountId;
+        this.likesId = likesId;
+    }
 }

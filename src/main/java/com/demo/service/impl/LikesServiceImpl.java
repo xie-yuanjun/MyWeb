@@ -4,6 +4,7 @@ import com.demo.entity.Account;
 import com.demo.entity.AccountLikes;
 import com.demo.entity.Likes;
 import com.demo.entity.Word;
+import com.demo.exception.DeleteException;
 import com.demo.exception.ServiceException;
 import com.demo.mapper.AccountLikesMapper;
 import com.demo.mapper.LikesMapper;
@@ -12,6 +13,7 @@ import com.demo.service.LikesService;
 import com.demo.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author admin
@@ -52,47 +54,42 @@ public class LikesServiceImpl implements LikesService {
      */
     @Override
     public boolean like(int targetId, int accountId, String targetType) {
-        //判断文档是否存在
-        Word word = new Word();
-        if (targetType.equals("word")) {
-            word.setId(targetId);
-            word = wordService.ifExists(word);
+        targetType = targetType.toUpperCase();
+
+        //判断文档或评论是否存在
+        if (targetType.equals("WORD")) {
+            Word word = wordService.ifExists(new Word(targetId));
             if (word == null) {
                 throw new ServiceException("不存在id为" + targetId + "的文档！");
             }
         }
 
         //判断用户是否存在
-        Account account = new Account();
-        account.setId(accountId);
-        Account accountInfo = accountService.select(account);
+        Account accountInfo = accountService.select(new Account(accountId));
         if (accountInfo == null) {
             throw new ServiceException("不存在id为" + accountId + "的用户！");
         }
 
-        //判断 点赞/取消
-        Likes likes = new Likes();
-        likes.setTargetId(targetId);
-        likes.setTargetType(targetType.toUpperCase());
-        likes = likesMapper.select(likes);              //查找likesId
-        AccountLikes accountLikes = new AccountLikes();
-        accountLikes.setAccountId(accountId);
-        accountLikes.setLikesId(likes.getId());
-        accountLikes = ifExists(accountLikes);          //通过accountId 和 likesId 判断是否已经存在记录
+        //判断是否点过赞
+        Likes likes = likesMapper.select(new Likes(targetId, targetType));                         //查找likesId
+        AccountLikes accountLikes = ifExists(new AccountLikes(accountId, likes.getId()));          //通过accountId 和 likesId 判断是否已经存在记录
         if (accountLikes == null) {
-            int i = accountLikesMapper.insert(accountLikes);
+            int i = accountLikesMapper.insert(new AccountLikes(accountId, likes.getId()));
             if (i == 1) {
                 return true;
             }
         }
 
-        //通过查询出来的 state 修改 state
+        //已经点过赞，存在记录，则修改点赞记录状态
         if (accountLikes.getState().equals("YES")) {
             accountLikes.setState("NO");
         } else {
             accountLikes.setState("YES");
         }
-        accountLikesMapper.update(accountLikes);
+        int var = accountLikesMapper.update(accountLikes);
+        if (var == 0) {
+            return false;
+        }
         return true;
     }
 
@@ -105,15 +102,99 @@ public class LikesServiceImpl implements LikesService {
      */
     @Override
     public int getCount(int targetId, String targetType) {
-        Likes likes = new Likes();
-        AccountLikes accountLikes = new AccountLikes();
-        likes.setTargetType(targetType);
-        likes.setTargetId(targetId);
+        targetType = targetType.toUpperCase();
+
+
+        Likes likes = likesMapper.select(new Likes(targetId, targetType));
+        int count = 0;
+        if (likes != null) {
+            count = accountLikesMapper.count(new AccountLikes(likes.getId()));
+        }
+
+        return count;
+    }
+
+    /**
+     * 增加一个赞
+     *
+     * @param targetId
+     * @param targetType
+     * @return
+     */
+    @Override
+    public int addLike(int targetId, String targetType) {
+        targetType = targetType.toUpperCase();
+        return addLike(new Likes(targetId, targetType));
+    }
+
+    /**
+     * 增加一个赞
+     *
+     * @return
+     */
+    @Override
+    public int addLike(Likes likes) {
+        return likesMapper.insert(likes);
+    }
+
+    /**
+     * 删除一个赞
+     *
+     * @param targetId
+     * @param targetType
+     * @return
+     */
+    @Override
+    public int delete(int targetId, String targetType) {
+        return this.delete(new Likes(targetId, targetType));
+    }
+
+    /**
+     * 删除一个赞
+     *
+     * @param likes
+     * @return
+     */
+    @Override
+    @Transactional
+    public int delete(Likes likes) {
+        likes = likesMapper.selectOne(likes);
+        if (likes == null) {
+            throw new DeleteException("试图删除不存在的记录");
+        }
+
+        AccountLikes accountLikes = accountLikesMapper.select(new AccountLikes(likes.getId()));
+        if (accountLikes != null) {
+            accountLikesMapper.delete(likes.getId());
+        }
+
+        return likesMapper.delete(likes);
+    }
+
+    /**
+     * 查看记录是否存在
+     *
+     * @param targetId
+     * @param targetType
+     * @return
+     */
+    @Override
+    public boolean ifExists(int targetId, String targetType) {
+        return ifExists(new Likes(targetId, targetType));
+    }
+
+    /**
+     * 查看记录是否存在
+     *
+     * @param likes
+     * @return
+     */
+    @Override
+    public boolean ifExists(Likes likes) {
         likes = likesMapper.select(likes);
         if (likes != null) {
-            accountLikes.setLikesId(likes.getId());
-            int count = accountLikesMapper.count(accountLikes);
+            return true;
         }
-        return 0;
+        return false;
     }
 }

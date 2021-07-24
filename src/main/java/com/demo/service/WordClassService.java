@@ -70,4 +70,38 @@ public interface WordClassService {
      * @return
      */
     List<WordClassInfo> selectByClassIdList(List classId);
+
+    /**
+     * 查看是否存在文档类型--根据id
+     *
+     * @param classId
+     * @return
+     */
+    boolean ifExists(int classId);
+
+    /**
+     * 查看用户是否拥有此文档类型--根据accountId, category
+     *
+     * @param accountId
+     * @param category
+     * @return
+     */
+    boolean ifExists(int accountId, String category);
+
+    /**
+     * 查看用户是否拥有此文档类型--根据classId, accountId
+     *
+     * @param classId
+     * @param accountId
+     * @return
+     */
+    boolean ifExists(int classId, int accountId);
+
+    /**
+     * 查看是否存在文档类型
+     *
+     * @param wordClass
+     * @return
+     */
+    boolean ifExists(WordClass wordClass);
 }

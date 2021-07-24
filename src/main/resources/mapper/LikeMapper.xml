@@ -4,8 +4,27 @@
     <select id="select" resultType="likes">
         select id, target_type, target_id from t_likes
         <where>
+            <if test="id != 0">
+                id = #{id}
+            </if>
             <if test="targetId != 0">
-                target_id = #{targetId}
+                and target_id = #{targetId}
+            </if>
+            <if test="targetType != null and targetType != ''">
+                and target_type = #{targetType}
+            </if>
+        </where>
+    </select>
+
+    <!--  查询  -->
+    <select id="selectOne" resultType="likes">
+        select id, target_type, target_id from t_likes
+        <where>
+            <if test="id != 0">
+                id = #{id}
+            </if>
+            <if test="targetId != 0">
+                and target_id = #{targetId}
             </if>
             <if test="targetType != null and targetType != ''">
                 and target_type = #{targetType}
@@ -17,4 +36,9 @@
     <insert id="insert" useGeneratedKeys="true">
         insert into t_likes (target_id, target_type) values (#{targetId}, #{targetType});
     </insert>
+
+    <!--  删除一条记录  -->
+    <delete id="delete" parameterType="likes">
+        delete likes where target_id = #{targetId} and target_type = # {targetType};
+    </delete>
 </mapper>

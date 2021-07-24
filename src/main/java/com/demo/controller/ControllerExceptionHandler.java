@@ -34,7 +34,7 @@ public class ControllerExceptionHandler {
     }
 
     /**
-     * 所有异常处理
+     * 非法参数异常
      *
      * @param e
      * @return
@@ -53,7 +53,7 @@ public class ControllerExceptionHandler {
      */
     @ExceptionHandler(ServiceException.class)
     public ResponseTemplate ServiceExceptionHandler(ServiceException e) {
-        responseTemplate.setResponseTemplate(null, StatusEnum.ERROR, e.getMessage());
+        responseTemplate.setResponseTemplate(null, StatusEnum.FAILED, e.getMessage());
         return responseTemplate;
     }
 

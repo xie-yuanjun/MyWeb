@@ -3,13 +3,13 @@ package com.demo.controller.word;
 import com.demo.entity.Comment;
 import com.demo.entity.Word;
 import com.demo.exception.IllegalParameterException;
+import com.demo.exception.IncorrectParamsException;
+import com.demo.exception.ParamsLackException;
 import com.demo.po.WordInfo;
 import com.demo.service.CommentService;
 import com.demo.service.WordService;
 import com.demo.utils.ResponseTemplate;
 import com.demo.utils.StatusEnum;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +37,17 @@ public class WordController {
      * @param word
      * @return
      */
-    @PostMapping("/word")
+    @PostMapping(value = "/word")
     public ResponseTemplate addWord(Word word) {
         ResponseTemplate response = new ResponseTemplate();
-        int i = wordService.insert(word);
-        if (i == 0) {
+        if (!StringUtils.hasText(word.getTitle())) {
+            return response.setResponseTemplate(StatusEnum.FAILED, "标题名称不能为空");
+        }
+
+        word.setCreateTime(new Date());
+        word.setId(0);
+        int var1 = wordService.insert(word);
+        if (var1 == 0) {
             return response.setResponseTemplate(StatusEnum.FAILED, "添加文档失败！");
         }
         return response.setResponseTemplate("添加文档成功！");
@@ -53,8 +59,8 @@ public class WordController {
      * @param id
      * @return
      */
-    @Delete("/word")
-    public ResponseTemplate deleteWord(int id) {
+    @DeleteMapping("/word")
+    public ResponseTemplate deleteWord(Integer id) {
         ResponseTemplate response = new ResponseTemplate();
         Word word = new Word();
         word.setId(id);
@@ -74,11 +80,21 @@ public class WordController {
     @PutMapping("/word")
     public ResponseTemplate updateTitle(Word word) {
         ResponseTemplate response = new ResponseTemplate();
+        if (word.getId() == 0) {
+            throw new ParamsLackException("缺少参数id: id=0");
+        }
+
+        if (word.getTitle() != null) {
+            if (!StringUtils.hasText(word.getTitle())) {
+                throw new IncorrectParamsException("文档标题不能设置为空");
+            }
+        }
+
         int i = wordService.update(word);
         if (i == 0) {
-            response.setResponseTemplate(StatusEnum.FAILED, "修改失败！");
+            return response.setResponseTemplate(StatusEnum.FAILED, "修改失败");
         }
-        return response.setResponseTemplate("修改成功！");
+        return response.setResponseTemplate("修改成功");
     }
 
     /**

@@ -50,4 +50,11 @@ public interface WordMapper {
      */
     List<Word> select(Word word);
 
+    /**
+     * 查询
+     * @param word
+     * @return
+     */
+    Word selectOne(Word word);
+
 }

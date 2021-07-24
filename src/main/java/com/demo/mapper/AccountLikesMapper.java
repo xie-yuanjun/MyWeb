@@ -4,6 +4,8 @@ import com.demo.entity.AccountLikes;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author admin
  * @Title: AccountLikesMapper
@@ -16,6 +18,7 @@ public interface AccountLikesMapper {
 
     /**
      * 检查数据库记录是否存在
+     *
      * @param accountLikes
      * @return id, state
      */
@@ -23,6 +26,7 @@ public interface AccountLikesMapper {
 
     /**
      * 插入一条记录
+     *
      * @param accountLikes
      * @return affect_row
      */
@@ -30,6 +34,7 @@ public interface AccountLikesMapper {
 
     /**
      * 修改state
+     *
      * @param accountLikes
      * @return affect_row
      */
@@ -37,8 +42,17 @@ public interface AccountLikesMapper {
 
     /**
      * 统计数量
+     *
      * @param accountLikes
      * @return
      */
     int count(AccountLikes accountLikes);
+
+    /**
+     * 批量删除
+     *
+     * @param likesId
+     * @return
+     */
+    int delete(int likesId);
 }

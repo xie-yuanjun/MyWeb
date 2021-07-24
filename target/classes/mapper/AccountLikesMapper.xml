@@ -33,4 +33,9 @@
             </if>
         </where>
     </select>
+
+    <!--  删除记录  -->
+    <delete id="deleteBatch" parameterType="int">
+        delete t_account_likes where likes_id = #{likesId}
+    </delete>
 </mapper>

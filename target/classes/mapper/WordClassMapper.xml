@@ -42,10 +42,13 @@
 
     <!--  根据类别名查找单个类别信息（name）  -->
     <select id="selectOne" resultType="wordClass">
-        select id, name from word_class
+        select id, account_id, name from word_class
         <where>
             <if test="id != 0">
                 id = #{id}
+            </if>
+            <if test="accountId != 0">
+                and account_id = #{accountId}
             </if>
             <if test="name != null ">
                 and name = #{name}
